@@ -1,4 +1,3 @@
-
 class Ship:
     def __init__(self, name:str, typ:str, lvl:int, exp:int, hp:int, atk : int, res : int, spd: int):
         self.name = name
