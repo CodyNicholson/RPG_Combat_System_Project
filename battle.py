@@ -3,7 +3,6 @@ from ship import Ship
 class Battle:
     def __init__(self, ship_list : list):
         self.ship_list = ship_list
-        self.defeated_ships_list = []
         self.turn_count = 0
 
     def start_turn(self):
@@ -15,11 +14,6 @@ class Battle:
         self.start_turn()
 
     def upkeep_phase(self) -> None:
-        if len(self.ship_list) > 1:
-            pass
-        else:
-            print(f"Game Over: The {self.ship_list[0].get_name()} Wins!\n")
-            exit()
         self.turn_count += 1
         print(f"\n<****** TURN {str(self.turn_count)} ******>")
         self.log_stats()
@@ -29,9 +23,7 @@ class Battle:
 
     def combat_phase(self):
         self.sort_ships_list_on_spd()
-        print(f"**** ACTION ORDER ****")
-        for index, ship in enumerate(self.ship_list):
-            print(f"{index+1} - {ship.get_name()} ({ship.get_spd()} spd)")
+        self.get_action_order()
         self.select_moves()
         self.log_stats()
 
@@ -42,18 +34,28 @@ class Battle:
         pass
         
     def sort_ships_list_on_spd(self) -> None:
-        self.ship_list.sort(key=lambda ship: ship.get_spd(), reverse=True)
+        self.ship_list.sort(key=lambda ship: ship.get_temp_spd(), reverse=True)
 
     def select_moves(self):
-        print("\n*** SELECT ACTIONS ***")
-        for current_ship in self.ship_list:
-            ship_action = current_ship.choose_action()
-            if ship_action == 1:
-                chosen_ship_index = self.choose_target(current_ship)
+        print("\n*** SELECT ACTION ***")
+        for current_ship in self.get_ships_not_sunk():
+            if current_ship.sunk():
+                print("This ship is sunk")
+            else:
+                ship_action = current_ship.choose_action()
+                if ship_action == 1:
+                    self.choose_target(current_ship)
+                elif ship_action == 2:
+                    current_ship.defend()
+                elif ship_action == 3:
+                    current_ship.concede()
+                else:
+                    print("Unreachable code!")
+            self.check_if_game_over()
                 
     def choose_target(self, current_ship : Ship) -> None:
         print("*** CHOOSE TARGET ***")
-        other_ships = self.get_list_of_other_ships(current_ship)
+        other_ships = self.get_list_of_other_ships_not_sunk(current_ship)
         for index, enemy_ship in enumerate(other_ships):
             print(f"{index+1} - {enemy_ship.get_name()}")
         chosen_enemy_ship_input = input("> ")
@@ -69,26 +71,40 @@ class Battle:
         print(f"The {current_ship.get_name()} attacked The {chosen_ship_name}\n")
         for ship in self.ship_list:
             if ship.get_name() == chosen_ship_name:
-                destroyed = ship.take_damage(current_ship.get_atk())
-                if destroyed:
-                    self.remove_ship_by_name(ship.get_name())
-                return
+                ship.take_damage(current_ship.get_temp_atk())
 
-    def get_list_of_other_ships(self, current_ship : Ship) -> list:
+    def get_list_of_other_ships_not_sunk(self, current_ship : Ship) -> list:
         other_ships = []
         for ship in self.ship_list:
-            if ship != current_ship:
+            if (ship != current_ship) and (ship.get_temp_hp() > 0):
                 other_ships.append(ship)
         return other_ships
 
     def log_stats(self):
         print("\n***** BATTLE LOG *****")
         for ship in self.ship_list:
-            print(f"{ship.get_name()} has {ship.get_r_hp()} hp")
+            print(f"{ship.get_name()} has {ship.get_temp_hp()} hp")
         print("")
 
-    def remove_ship_by_name(self, ship_name):
+    def get_ships_not_sunk(self) -> list:
+        ships_not_sunk = []
         for ship in self.ship_list:
-            if ship.get_name() == ship_name:
-                self.ship_list.remove(ship)
-                
+            if ship.get_temp_hp() > 0:
+                ships_not_sunk.append(ship)
+        return ships_not_sunk
+
+    def get_action_order(self) -> None:
+        print(f"**** ACTION ORDER ****")
+        for index, ship in enumerate(self.get_ships_not_sunk()):
+            print(f"{index+1} - {ship.get_name()} ({ship.get_temp_spd()} spd)")
+
+    def check_if_game_over(self) -> None:
+        ships_remaining = []
+        for ship in self.ship_list:
+            if not ship.sunk():
+                ships_remaining.append(ship)
+        if len(ships_remaining) == 1:
+            print(f"Game Over: The {ships_remaining[0].get_name()} Wins!\n")
+            exit()
+        elif len(ships_remaining) < 1:
+            print("No one survived. Error?")

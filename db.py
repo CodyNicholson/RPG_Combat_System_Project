@@ -25,7 +25,7 @@ def create_ship(*, name:str, typ:str):
         'spd': random.randint(80, 150)
     }
     print("\nNew Ship:")
-    print(post + "\n")
+    print(str(post) + "\n")
     # Insert the document into the database
     # The database and collection, if they don't already exist, will be created at this point
     collection.insert_one(post)
@@ -61,3 +61,16 @@ def create_ship_list() -> list:
         create_ship(name="Lynx", typ="Glider")
         ship_list = get_ships()
     return ship_list
+
+def save_ship(*, ship_name:str, ship:Ship) -> None:
+    updated_ship = {
+        'name': ship_name,
+        'lvl': ship.get_lvl(),
+        'exp': ship.get_exp(),
+        'typ': ship.get_typ(),
+        'hp': ship.get_base_hp(),
+        'atk': ship.get_base_atk(),
+        'res': ship.get_base_res(),
+        'spd': ship.get_base_spd()
+    }
+    collection.update({"name": ship_name}, {"$set": updated_ship}, upsert = True)
