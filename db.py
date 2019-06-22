@@ -14,18 +14,24 @@ collection = db.ships
 
 def create_ship(*, name:str, typ:str):
     # A dictionary that represents the document to be inserted
+    rand_vals = {'hp': [550,1100], 'atk': [125,325], 'res': [75, 225], 'spd': [100, 350]}
+    if typ == "Bomber":
+        rand_vals = {'hp': [650,1300], 'atk': [150,450], 'res': [100, 300], 'spd': [1, 100]}
+    elif typ == "Glider":
+        rand_vals = {'hp': [450,900], 'atk': [100,250], 'res': [50, 150], 'spd': [200, 600]}
+
     post = {
         'name': name,
         'lvl': 1,
         'exp': 0,
         'typ': typ,
-        'hp': random.randint(500,1000),
-        'atk': random.randint(100,300),
-        'res': random.randint(50,200),
-        'spd': random.randint(80, 150)
+        'hp': random.randint(rand_vals['hp'][0],rand_vals['hp'][1]),
+        'atk': random.randint(rand_vals['atk'][0],rand_vals['atk'][1]),
+        'res': random.randint(rand_vals['res'][0],rand_vals['res'][1]),
+        'spd': random.randint(rand_vals['spd'][0],rand_vals['spd'][1])
     }
-    print("\nNew Ship:")
-    print(str(post) + "\n")
+    # print("\nNew Ship:")
+    # print(str(post) + "\n")
     # Insert the document into the database
     # The database and collection, if they don't already exist, will be created at this point
     collection.insert_one(post)
@@ -62,7 +68,8 @@ def create_ship_list() -> list:
         ship_list = get_ships()
     return ship_list
 
-def save_ship(*, ship_name:str, ship:Ship) -> None:
+def save_ship(*, ship:Ship) -> None:
+    ship_name = ship.get_name()
     updated_ship = {
         'name': ship_name,
         'lvl': ship.get_lvl(),

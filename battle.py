@@ -1,4 +1,5 @@
 from ship import Ship
+from db import save_ship
 
 class Battle:
     def __init__(self, ship_list : list):
@@ -15,7 +16,7 @@ class Battle:
 
     def upkeep_phase(self) -> None:
         self.turn_count += 1
-        print(f"\n<****** TURN {str(self.turn_count)} ******>")
+        print(f"\n<****** TURN {str(self.turn_count)} ******>\n")
         self.log_stats()
 
     def main_phase_1(self):
@@ -50,7 +51,7 @@ class Battle:
                 elif ship_action == 3:
                     current_ship.concede()
                 else:
-                    print("Unreachable code!")
+                    print("Unreachable code!\n")
             self.check_if_game_over()
                 
     def choose_target(self, current_ship : Ship) -> None:
@@ -59,6 +60,7 @@ class Battle:
         for index, enemy_ship in enumerate(other_ships):
             print(f"{index+1} - {enemy_ship.get_name()}")
         chosen_enemy_ship_input = input("> ")
+        print()
         if chosen_enemy_ship_input.isdigit():
             chosen_enemy_ship_index = int(chosen_enemy_ship_input) - 1
         else:
@@ -71,7 +73,11 @@ class Battle:
         print(f"The {current_ship.get_name()} attacked The {chosen_ship_name}\n")
         for ship in self.ship_list:
             if ship.get_name() == chosen_ship_name:
-                ship.take_damage(current_ship.get_temp_atk())
+                ship_sunk = ship.take_damage(current_ship.get_temp_atk())
+                if ship_sunk:
+                    self.calc_and_assign_exp(current_ship, ship)
+                else:
+                    self.assign_exp(current_ship, 1)
 
     def get_list_of_other_ships_not_sunk(self, current_ship : Ship) -> list:
         other_ships = []
@@ -81,10 +87,10 @@ class Battle:
         return other_ships
 
     def log_stats(self):
-        print("\n***** BATTLE LOG *****")
-        for ship in self.ship_list:
+        print("***** BATTLE LOG *****")
+        for ship in self.get_ships_not_sunk():
             print(f"{ship.get_name()} has {ship.get_temp_hp()} hp")
-        print("")
+        print()
 
     def get_ships_not_sunk(self) -> list:
         ships_not_sunk = []
@@ -104,7 +110,27 @@ class Battle:
             if not ship.sunk():
                 ships_remaining.append(ship)
         if len(ships_remaining) == 1:
-            print(f"Game Over: The {ships_remaining[0].get_name()} Wins!\n")
+            last_ship = None
+            for ship in self.ship_list:
+                ship.total_exp()
+                save_ship(ship=ship)
+                if ship.get_temp_hp() > 0:
+                    last_ship = ship
+            print(f"Game Over: The {last_ship.get_name()} Wins!\n")
             exit()
         elif len(ships_remaining) < 1:
-            print("No one survived. Error?")
+            print("No one survived. Error?\n")
+
+    def assign_exp(self, ship, exp):
+        ship.increase_temp_exp(exp)
+
+    def calc_and_assign_exp(self, atk_ship, defeated_ship):
+        atk_ship_lvl = atk_ship.get_lvl()
+        defeated_ship_lvl = defeated_ship.get_lvl()
+        lvl_diff = defeated_ship_lvl - atk_ship_lvl
+        calc_exp = 50
+        if lvl_diff > 0:
+            calc_exp = (75 + (lvl_diff * 25))
+        elif lvl_diff < 0:
+            calc_exp = (50 + (lvl_diff * 5)) if (lvl_diff > -10) else 0
+        atk_ship.increase_temp_exp(calc_exp)
