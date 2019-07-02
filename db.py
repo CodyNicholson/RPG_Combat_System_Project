@@ -7,19 +7,17 @@ conn = 'mongodb://localhost:27017'
 client = pymongo.MongoClient(conn)
 
 # Declare the database
-db = client.rpg_combat_system
+db = client.rpgdb
 
 # Declare the collection
 collection = db.ships
 
 def create_ship(*, name:str, typ:str):
-    # A dictionary that represents the document to be inserted
-    rand_vals = {'hp': [550,1100], 'atk': [125,325], 'res': [75, 225], 'spd': [100, 350]}
+    rand_vals = {'hp': [700,900], 'atk': [400,600], 'res': [100, 200], 'spd': [100, 350]}
     if typ == "Bomber":
-        rand_vals = {'hp': [650,1300], 'atk': [150,450], 'res': [100, 300], 'spd': [1, 100]}
+        rand_vals = {'hp': [800,1000], 'atk': [350,550], 'res': [150, 250], 'spd': [10, 100]}
     elif typ == "Glider":
-        rand_vals = {'hp': [450,900], 'atk': [100,250], 'res': [50, 150], 'spd': [200, 600]}
-
+        rand_vals = {'hp': [600,800], 'atk': [300, 500], 'res': [50, 150], 'spd': [300, 600]}
     post = {
         'name': name,
         'lvl': 1,
@@ -30,10 +28,6 @@ def create_ship(*, name:str, typ:str):
         'res': random.randint(rand_vals['res'][0],rand_vals['res'][1]),
         'spd': random.randint(rand_vals['spd'][0],rand_vals['spd'][1])
     }
-    # print("\nNew Ship:")
-    # print(str(post) + "\n")
-    # Insert the document into the database
-    # The database and collection, if they don't already exist, will be created at this point
     collection.insert_one(post)
 
 def create_ship_hardcode(*, name:str, lvl:int, exp:int, typ:str, hp:int, atk:int, res:int, spd:int):
@@ -57,6 +51,7 @@ def get_ships() -> list:
     ship_list = []
     for ship in ships_cursor:
         ship_list.append(Ship(name=ship['name'], lvl=ship['lvl'], exp=ship['exp'], typ=ship['typ'], hp=ship['hp'], atk=ship['atk'], res=ship['res'], spd=ship['spd']))
+    print()
     return ship_list
 
 def create_ship_list() -> list:
