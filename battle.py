@@ -1,21 +1,24 @@
 from ship import Ship
 from db import save_ship
+import random
 
 class Battle:
     def __init__(self, ship_list : list):
         self.ship_list = ship_list
         self.current_ship = ship_list[0]
-        self.turn_count = 1
+        self.turn_count = 0
         self.other_ships = []
 
     def start_game(self) -> None:
         while not self.check_if_game_over():
+            self.sort_ships_list_on_spd()
             self.get_action_order()
+            self.turn_count += 1
             for ship in self.get_ships_not_sunk():
-                self.turn_count += 0
                 self.current_ship = ship
                 self.other_ships = self.get_list_of_other_ships_not_sunk()
                 self.start_turn()
+            print(f"<-- END TURN {self.turn_count} -->\n")
 
     def start_turn(self) -> None:
         self.upkeep_phase() 
@@ -25,7 +28,7 @@ class Battle:
         self.clean_up_phase()
 
     def upkeep_phase(self) -> None:
-        print(f"<** The {self.current_ship.get_name()} - TURN {str(self.turn_count)} **>\n")
+        print(f"<** The {self.current_ship.get_name()} - TURN {self.turn_count} **>\n")
         self.log_stats()
 
     def main_phase_1(self):
@@ -33,7 +36,6 @@ class Battle:
 
     def combat_phase(self):
         print(f"<** The {self.current_ship.get_name()} - Combat Phase **>\n")
-        self.sort_ships_list_on_spd()
         self.select_moves()
         self.log_stats()
 
@@ -76,15 +78,34 @@ class Battle:
         if chosen_enemy_ship_index > (len(self.other_ships)-1) or chosen_enemy_ship_index < 0:
             self.choose_target()
             return
-        chosen_ship_name = self.other_ships[chosen_enemy_ship_index].get_name()
-        print(f"The {self.current_ship.get_name()} attacked The {chosen_ship_name}\n")
-        for ship in self.ship_list:
-            if ship.get_name() == chosen_ship_name:
-                ship_sunk = ship.take_damage(self.current_ship.get_temp_atk())
-                if ship_sunk:
-                    self.calc_and_assign_exp(self.current_ship, ship)
-                else:
-                    self.assign_exp(self.current_ship, 1)
+        chosen_ship = self.other_ships[chosen_enemy_ship_index]
+        self.calc_ship_attack(chosen_ship)
+
+    def calc_ship_attack(self, chosen_ship : Ship) -> None:
+        print(f"The {self.current_ship.get_name()} attacked The {chosen_ship.get_name()}\n")
+        atk_spd = self.current_ship.get_temp_spd()
+        def_spd = chosen_ship.get_temp_spd()
+        ship_sunk = False
+        if def_spd > (atk_spd * 2):
+            hit_chance = 50
+            print(f"HC: {hit_chance}\n")
+            if random.randint(0,100) > hit_chance:
+                ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
+            else:
+                print(f"The {self.current_ship.get_name()} missed The {chosen_ship.get_name()}\n")
+        elif def_spd > atk_spd:
+            hit_chance = (100 - round(((def_spd-atk_spd)/atk_spd)/2*100))
+            print(f"HC: {hit_chance}\n")
+            if random.randint(0,100) > hit_chance:
+                ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
+            else:
+                print(f"The {self.current_ship.get_name()} missed The {chosen_ship.get_name()}\n")
+        else:
+            ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
+        if ship_sunk:
+            self.calc_and_assign_exp(self.current_ship, chosen_ship)
+        else:
+            self.current_ship.increase_temp_exp(1)
 
     def get_list_of_other_ships_not_sunk(self) -> list:
         other_ships = []
@@ -130,16 +151,13 @@ class Battle:
             return True
         return False
 
-    def assign_exp(self, ship, exp):
-        ship.increase_temp_exp(exp)
-
     def calc_and_assign_exp(self, atk_ship, defeated_ship):
         atk_ship_lvl = atk_ship.get_lvl()
         defeated_ship_lvl = defeated_ship.get_lvl()
         lvl_diff = defeated_ship_lvl - atk_ship_lvl
         calc_exp = 50
         if lvl_diff > 0:
-            calc_exp = (75 + (lvl_diff * 25))
+            calc_exp = (50 + (lvl_diff * 25))
         elif lvl_diff < 0:
             calc_exp = (50 + (lvl_diff * 5)) if (lvl_diff > -10) else 0
         atk_ship.increase_temp_exp(calc_exp)
