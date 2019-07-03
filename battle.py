@@ -89,14 +89,14 @@ class Battle:
         if def_spd > (atk_spd * 2):
             hit_chance = 50
             print(f"HC: {hit_chance}\n")
-            if random.randint(0,100) > hit_chance:
+            if random.randint(0,100) < hit_chance:
                 ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
             else:
                 print(f"The {self.current_ship.get_name()} missed The {chosen_ship.get_name()}\n")
         elif def_spd > atk_spd:
             hit_chance = (100 - round(((def_spd-atk_spd)/atk_spd)/2*100))
             print(f"HC: {hit_chance}\n")
-            if random.randint(0,100) > hit_chance:
+            if random.randint(0,100) < hit_chance:
                 ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
             else:
                 print(f"The {self.current_ship.get_name()} missed The {chosen_ship.get_name()}\n")

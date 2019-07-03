@@ -13,11 +13,11 @@ db = client.rpgdb
 collection = db.ships
 
 def create_ship(*, name:str, typ:str):
-    rand_vals = {'hp': [700,900], 'atk': [400,600], 'res': [100, 200], 'spd': [100, 350]}
+    rand_vals = {'hp': [700, 900], 'atk': [300, 500], 'res': [100, 200], 'spd': [150, 250]}
     if typ == "Bomber":
-        rand_vals = {'hp': [800,1000], 'atk': [350,550], 'res': [150, 250], 'spd': [10, 100]}
+        rand_vals = {'hp': [800, 1000], 'atk': [350, 550], 'res': [150, 250], 'spd': [50, 150]}
     elif typ == "Glider":
-        rand_vals = {'hp': [600,800], 'atk': [300, 500], 'res': [50, 150], 'spd': [300, 600]}
+        rand_vals = {'hp': [600, 800], 'atk': [250, 450], 'res': [50, 150], 'spd': [200, 300]}
     post = {
         'name': name,
         'lvl': 1,
