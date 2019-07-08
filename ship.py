@@ -96,16 +96,17 @@ class Ship:
         action = ""
         actions = ["1", "2", "3"]
         while action not in actions:
-            action = input(f"The {self.name} is awaiting orders:\n1 = Attack\n2 = Defend\n3 = Concede\n> ")
+            action = input(f"The {self.name} is awaiting orders:\n1 = Fire Cannon\n2 = Throw Bombs\n3 = Launch Torpedoes\n4 = Concede\n> ")
             print()
             if action == "1":
                 return 1
             elif action == "2":
-                print(f"{self.name} took evasive actions\n")
                 return 2
             elif action == "3":
-                print(f"{self.name} conceded\n")
                 return 3
+            elif action == "4":
+                print(f"{self.name} conceded\n")
+                return 4
 
     def take_damage(self, dmg) -> bool:
         temp_hp = self.get_temp_hp()
@@ -143,10 +144,10 @@ class Ship:
             self.level_up(current_lvl)
             current_exp -= 100
         if current_exp < 100:
-            print(f"The {self.get_name()} gained {self.get_temp_exp()} exp this battle and now has {current_exp} exp\n")
+            print(f"\nThe {self.get_name()} gained {self.get_temp_exp()} exp this battle and now has {current_exp} exp")
             self.set_exp(current_exp)
         else:
-            print(f"In addition to leving up, The {self.get_name()} gained {current_exp} exp this battle\n")
+            print(f"\nIn addition to leving up, The {self.get_name()} gained {current_exp} exp this battle")
     
     def level_up(self, current_lvl:int) -> None:
         self.set_lvl(current_lvl)
@@ -162,4 +163,4 @@ class Ship:
         self.set_base_atk(atk_increase)
         self.set_base_res(res_increase)
         self.set_base_spd(spd_increase)
-        print(f"<********** LEVEL UP **********>\nThe {self.get_name()} grew to level {current_lvl}!\nHP: {current_hp} -> {hp_increase}\nATK: {current_atk} -> {atk_increase}\nRES: {current_res} -> {res_increase}\nSPD: {current_spd} -> {spd_increase}\n<******************************>\n")
+        print(f"\n<********** LEVEL UP **********>\nThe {self.get_name()} grew to level {current_lvl}!\nHP: {current_hp} -> {hp_increase}\nATK: {current_atk} -> {atk_increase}\nRES: {current_res} -> {res_increase}\nSPD: {current_spd} -> {spd_increase}\n<******************************>")

@@ -9,7 +9,7 @@ class Battle:
         self.turn_count = 0
         self.other_ships = []
 
-    def start_game(self) -> None:
+    def start_battle(self) -> None:
         while not self.check_if_game_over():
             self.sort_ships_list_on_spd()
             self.get_action_order()
@@ -17,7 +17,8 @@ class Battle:
             for ship in self.get_ships_not_sunk():
                 self.current_ship = ship
                 self.other_ships = self.get_list_of_other_ships_not_sunk()
-                self.start_turn()
+                if not self.current_ship.sunk():
+                    self.start_turn()
             print(f"<-- END TURN {self.turn_count} -->\n")
 
     def start_turn(self) -> None:
@@ -37,7 +38,6 @@ class Battle:
     def combat_phase(self):
         print(f"<** The {self.current_ship.get_name()} - Combat Phase **>\n")
         self.select_moves()
-        self.log_stats()
 
     def main_phase_2(self):
         print(f"<** The {self.current_ship.get_name()} - Main Phase 2 **>\n")
@@ -53,18 +53,20 @@ class Battle:
         if self.current_ship.sunk():
             print("\nThis ship is sunk\n")
         else:
-            ship_action = self.current_ship.choose_action()
-            if ship_action == 1:
-                self.choose_target()
-            elif ship_action == 2:
-                self.current_ship.defend()
-            elif ship_action == 3:
+            action_type = self.current_ship.choose_action()
+            if action_type == 1:
+                self.choose_target(action_type)
+            elif action_type == 2:
+                self.choose_target(action_type)
+            elif action_type == 3:
+                self.choose_target(action_type)
+            elif action_type == 4:
                 self.current_ship.concede()
             else:
                 print("Unreachable code!\n")
         self.check_if_game_over()
                 
-    def choose_target(self) -> None:
+    def choose_target(self, action_type : int) -> None:
         print("<*** CHOOSE TARGET ***>")
         for index, enemy_ship in enumerate(self.other_ships):
             print(f"{index+1} - {enemy_ship.get_name()}")
@@ -73,10 +75,10 @@ class Battle:
         if chosen_enemy_ship_input.isdigit():
             chosen_enemy_ship_index = int(chosen_enemy_ship_input) - 1
         else:
-            self.choose_target()
+            self.choose_target(action_type)
             return
         if chosen_enemy_ship_index > (len(self.other_ships)-1) or chosen_enemy_ship_index < 0:
-            self.choose_target()
+            self.choose_target(action_type)
             return
         chosen_ship = self.other_ships[chosen_enemy_ship_index]
         self.calc_ship_attack(chosen_ship)
@@ -139,12 +141,13 @@ class Battle:
             if not ship.sunk():
                 ships_remaining.append(ship)
         if len(ships_remaining) == 1:
+            print("<$$$ EXP Gains $$$>")
             for ship in self.ship_list:
                 ship.total_exp()
                 save_ship(ship=ship)
                 if ship.get_temp_hp() > 0:
                     last_ship = ship
-            print(f"Game Over: The {last_ship.get_name()} Wins!\n")
+            print(f"\nGame Over: The {last_ship.get_name()} Wins!\n")
             exit()
         elif len(ships_remaining) < 1:
             print("No one survived. Error?\n")

@@ -17,7 +17,7 @@ def create_ship(*, name:str, typ:str):
     if typ == "Bomber":
         rand_vals = {'hp': [800, 1000], 'atk': [350, 550], 'res': [150, 250], 'spd': [50, 150]}
     elif typ == "Glider":
-        rand_vals = {'hp': [600, 800], 'atk': [250, 450], 'res': [50, 150], 'spd': [200, 300]}
+        rand_vals = {'hp': [600, 800], 'atk': [250, 450], 'res': [50, 150], 'spd': [250, 350]}
     post = {
         'name': name,
         'lvl': 1,
