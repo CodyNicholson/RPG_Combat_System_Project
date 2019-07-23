@@ -96,7 +96,7 @@ class Ship:
         action = ""
         actions = ["1", "2", "3"]
         while action not in actions:
-            action = input(f"The {self.name} is awaiting orders:\n1 = Fire Cannon\n2 = Throw Bombs\n3 = Launch Torpedoes\n4 = Concede\n> ")
+            action = input(f"The {self.name} is awaiting orders:\n1 = Fire Cannon\n2 = Drop Bombs\n3 = Launch Torpedoes\n4 = Concede\n> ")
             print()
             if action == "1":
                 return 1

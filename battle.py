@@ -81,10 +81,15 @@ class Battle:
             self.choose_target(action_type)
             return
         chosen_ship = self.other_ships[chosen_enemy_ship_index]
-        self.calc_ship_attack(chosen_ship)
+        self.calc_ship_attack(chosen_ship, action_type)
 
-    def calc_ship_attack(self, chosen_ship : Ship) -> None:
-        print(f"The {self.current_ship.get_name()} attacked The {chosen_ship.get_name()}\n")
+    def calc_ship_attack(self, chosen_ship : Ship, action_type : int) -> None:
+        weapon_txt = "cannons"
+        if action_type == 2:
+            weapon_txt = "bombs"
+        elif action_type == 3:
+            weapon_txt = "torpedos"
+        print(f"The {self.current_ship.get_name()} attacked The {chosen_ship.get_name()} using the {weapon_txt}\n")
         atk_spd = self.current_ship.get_temp_spd()
         def_spd = chosen_ship.get_temp_spd()
         ship_sunk = False
@@ -103,7 +108,12 @@ class Battle:
             else:
                 print(f"The {self.current_ship.get_name()} missed The {chosen_ship.get_name()}\n")
         else:
-            ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
+            hit_chance = 95
+            print(f"HC: {hit_chance}\n")
+            if random.randint(0,100) < hit_chance:
+                ship_sunk = chosen_ship.take_damage(self.current_ship.get_temp_atk())
+            else:
+                print(f"The {self.current_ship.get_name()} missed The {chosen_ship.get_name()}\n")
         if ship_sunk:
             self.calc_and_assign_exp(self.current_ship, chosen_ship)
         else:
@@ -148,9 +158,15 @@ class Battle:
                 if ship.get_temp_hp() > 0:
                     last_ship = ship
             print(f"\nGame Over: The {last_ship.get_name()} Wins!\n")
-            exit()
+            return True
         elif len(ships_remaining) < 1:
-            print("No one survived. Error?\n")
+            print("<$$$ EXP Gains $$$>")
+            for ship in self.ship_list:
+                ship.total_exp()
+                save_ship(ship=ship)
+                if ship.get_temp_hp() > 0:
+                    last_ship = ship
+            print("No one survived.\n")
             return True
         return False
 
