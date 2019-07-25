@@ -51,7 +51,6 @@ def get_ships() -> list:
     ship_list = []
     for ship in ships_cursor:
         ship_list.append(Ship(name=ship['name'], lvl=ship['lvl'], exp=ship['exp'], typ=ship['typ'], hp=ship['hp'], atk=ship['atk'], res=ship['res'], spd=ship['spd']))
-    print()
     return ship_list
 
 def create_ship_list() -> list:

@@ -67,21 +67,20 @@ class Battle:
         self.check_if_game_over()
                 
     def choose_target(self, action_type : int) -> None:
-        print("<*** CHOOSE TARGET ***>")
-        for index, enemy_ship in enumerate(self.other_ships):
-            print(f"{index+1} - {enemy_ship.get_name()}")
-        chosen_enemy_ship_input = input("> ")
-        print()
-        if chosen_enemy_ship_input.isdigit():
-            chosen_enemy_ship_index = int(chosen_enemy_ship_input) - 1
-        else:
-            self.choose_target(action_type)
-            return
-        if chosen_enemy_ship_index > (len(self.other_ships)-1) or chosen_enemy_ship_index < 0:
-            self.choose_target(action_type)
-            return
-        chosen_ship = self.other_ships[chosen_enemy_ship_index]
-        self.calc_ship_attack(chosen_ship, action_type)
+        keep_going = True
+        while keep_going:
+            print("<*** CHOOSE TARGET ***>")
+            for index, enemy_ship in enumerate(self.other_ships):
+                print(f"{index+1} - {enemy_ship.get_name()}")
+            try:
+                chosen_enemy_ship_index = int(input("> ")) - 1
+                print()
+                if chosen_enemy_ship_index < len(self.other_ships) and chosen_enemy_ship_index >= 0:
+                    chosen_ship = self.other_ships[chosen_enemy_ship_index]
+                    self.calc_ship_attack(chosen_ship, action_type)
+                    keep_going = False
+            except Exception:
+                pass
 
     def calc_ship_attack(self, chosen_ship : Ship, action_type : int) -> None:
         weapon_txt = "cannons"

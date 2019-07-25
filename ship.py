@@ -15,7 +15,7 @@ class Ship:
         self.temp_res = res
         self.base_spd = spd
         self.temp_spd = spd
-        print(f"Ship: name = {self.get_name()}, lvl = {self.get_lvl()}, exp = {self.get_exp()}, typ = {self.get_typ()}, hp = {self.get_base_hp()}, atk = {self.get_base_atk()}, res = {self.get_base_res()}, spd = {self.get_base_spd()}")
+        #print(f"Ship: name = {self.get_name()}, lvl = {self.get_lvl()}, exp = {self.get_exp()}, typ = {self.get_typ()}, hp = {self.get_base_hp()}, atk = {self.get_base_atk()}, res = {self.get_base_res()}, spd = {self.get_base_spd()}")
 
     def get_name(self) -> str:
         return self.name
