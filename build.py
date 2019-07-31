@@ -3,7 +3,7 @@ from db import get_ships, create_ship, delete_ship
 def choose_build():
     keep_going = True
     while keep_going:
-        print("Build Menu:\n0 - Go Back\n1 - Create Battleship\n2 - Modify Battleship\n3 - Delete Battleship")
+        print("Build Battleship Menu:\n0 - Go Back\n1 - Create\n2 - List\n3 - Modify\n4 - Delete")
         try:
             selection = int(input("> "))
             if selection == 0:
@@ -19,12 +19,22 @@ def choose_build():
                     continue
                 create_ship(name=name, typ=typ)
             elif selection == 2:
-                modify_ships()
+                list_ships()
+                continue
             elif selection == 3:
+                modify_ships()
+            elif selection == 4:
                 delete_battleship()
         except Exception:
             print("\nInvalid input\n")
         print()
+
+def list_ships() -> None:
+    ships = get_ships()
+    print("\nShips In Harbor:")
+    for index, ship in enumerate(ships):
+        print(f"{index+1} - {ship.get_name()} - Lvl {ship.get_lvl()} {ship.get_typ()}")
+    print()
 
 def delete_battleship() -> None:
     all_ships = get_ships()

@@ -188,7 +188,7 @@ def choose_ships_for_battle():
         print("Select Battleships For Battle:\n0 - Finish Selecting")
         for index, ship in enumerate(all_ships):
             print(f"{index+1} - The {ship.get_name()} - Lvl {ship.get_lvl()} {ship.get_typ()}")
-        ship_index = input("> ")
+        ship_index = input("> ") # REFACTOR
         print()
         if ship_index.isdigit() and int(ship_index) < (len(all_ships)+1) and int(ship_index) > 0:
             ships_for_battle.append(all_ships[int(ship_index) - 1])
