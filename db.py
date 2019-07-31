@@ -13,6 +13,7 @@ db = client.rpgdb
 collection = db.ships
 
 def create_ship(*, name:str, typ:str):
+    # TODO check if name already exists
     rand_vals = {'hp': [700, 900], 'atk': [300, 500], 'res': [100, 200], 'spd': [150, 250]}
     if typ == "Bomber":
         rand_vals = {'hp': [800, 1000], 'atk': [350, 550], 'res': [150, 250], 'spd': [50, 150]}
@@ -45,6 +46,15 @@ def create_ship_hardcode(*, name:str, lvl:int, exp:int, typ:str, hp:int, atk:int
     # Insert the document into the database
     # The database and collection, if they don't already exist, will be created at this point
     collection.insert_one(post)
+
+def delete_ship(*, name:str):
+    all_ships = get_ships()
+    for ship in all_ships:
+        ship_name = ship.get_name()
+        if ship_name == name:
+            collection.delete_one({"name" : ship_name})
+            return
+    print("There is no ship in the harbor with that name")
 
 def get_ships() -> list:
     ships_cursor = db.ships.find()

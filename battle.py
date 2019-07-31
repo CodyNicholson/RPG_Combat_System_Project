@@ -1,5 +1,5 @@
 from ship import Ship
-from db import save_ship
+from db import save_ship, create_ship_list
 import random
 
 class Battle:
@@ -179,3 +179,33 @@ class Battle:
         elif lvl_diff < 0:
             calc_exp = (50 + (lvl_diff * 5)) if (lvl_diff > -10) else 0
         atk_ship.increase_temp_exp(calc_exp)
+
+def choose_ships_for_battle():
+    all_ships = create_ship_list()
+    ships_for_battle = []
+    keep_going = True
+    while keep_going:
+        print("Select Battleships For Battle:\n0 - Finish Selecting")
+        for index, ship in enumerate(all_ships):
+            print(f"{index+1} - The {ship.get_name()} - Lvl {ship.get_lvl()} {ship.get_typ()}")
+        ship_index = input("> ")
+        print()
+        if ship_index.isdigit() and int(ship_index) < (len(all_ships)+1) and int(ship_index) > 0:
+            ships_for_battle.append(all_ships[int(ship_index) - 1])
+            all_ships.remove(all_ships[int(ship_index) - 1])
+        elif ship_index.isdigit() and int(ship_index) == 0:
+            if len(ships_for_battle) < 2:
+                print("There are not enough ships to start a battle")
+            else:
+                keep_going = False
+        if len(ships_for_battle) > 0:
+            print("\nShips in battle so far:")
+            for s in ships_for_battle:
+                print(f" - The {s.get_name()} - Lvl {s.get_lvl()} {s.get_typ()}")
+        print()
+    return ships_for_battle
+
+def choose_battle():
+    ships_for_battle = choose_ships_for_battle()
+    battle = Battle(ship_list=ships_for_battle)
+    battle.start_battle()
