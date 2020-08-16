@@ -31,9 +31,9 @@ def choose_build():
 
 def list_ships() -> None:
     ships = get_ships()
-    print("\nShips In Harbor:")
+    print("\nBattleships In Harbor:")
     for index, ship in enumerate(ships):
-        print(f"{index+1} - {ship.get_name()} - Lvl {ship.get_lvl()} {ship.get_typ()}")
+        print(f"{index+1}: name = The {ship.get_name()}, lvl = {ship.get_lvl()}, exp = {ship.get_exp()}, typ = {ship.get_typ()}, hp = {ship.get_base_hp()}, atk = {ship.get_base_atk()}, res = {ship.get_base_res()}, spd = {ship.get_base_spd()}")
     print()
 
 def delete_battleship() -> None:

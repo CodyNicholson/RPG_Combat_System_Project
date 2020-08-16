@@ -188,21 +188,26 @@ def choose_ships_for_battle():
         print("Select Battleships For Battle:\n0 - Finish Selecting")
         for index, ship in enumerate(all_ships):
             print(f"{index+1} - The {ship.get_name()} - Lvl {ship.get_lvl()} {ship.get_typ()}")
-        ship_index = input("> ") # REFACTOR
-        print()
-        if ship_index.isdigit() and int(ship_index) < (len(all_ships)+1) and int(ship_index) > 0:
-            ships_for_battle.append(all_ships[int(ship_index) - 1])
-            all_ships.remove(all_ships[int(ship_index) - 1])
-        elif ship_index.isdigit() and int(ship_index) == 0:
-            if len(ships_for_battle) < 2:
-                print("There are not enough ships to start a battle")
+        try:
+            ship_index = int(input("> "))
+            print()
+            if ship_index < (len(all_ships)+1) and ship_index > 0:
+                ships_for_battle.append(all_ships[ship_index - 1])
+                all_ships.remove(all_ships[ship_index - 1])
+            elif ship_index == 0:
+                if len(ships_for_battle) < 2:
+                    print("There are not enough ships to start a battle")
+                else:
+                    keep_going = False
             else:
-                keep_going = False
-        if len(ships_for_battle) > 0:
-            print("\nShips in battle so far:")
-            for s in ships_for_battle:
-                print(f" - The {s.get_name()} - Lvl {s.get_lvl()} {s.get_typ()}")
-        print()
+                print("Invalid Input")
+            if len(ships_for_battle) > 0:
+                print("\nShips in battle so far:")
+                for s in ships_for_battle:
+                    print(f" - The {s.get_name()} - Lvl {s.get_lvl()} {s.get_typ()}")
+            print()
+        except Exception:
+            print("\nInvalid Input\n")
     return ships_for_battle
 
 def choose_battle():
